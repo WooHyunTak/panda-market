@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { env } from './common/configs/env';
 import { CommentModule } from './comment/comment.module';
 import { ArticleModule } from './article/article.module';
+import { ProductModule } from './product/product.module';
 @Module({
   imports: [
     UserModule,
@@ -20,6 +21,7 @@ import { ArticleModule } from './article/article.module';
     }),
     CommentModule,
     ArticleModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
