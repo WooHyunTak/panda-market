@@ -1,13 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductRepository } from './product.repository';
 import { CreateProductDto } from './dto/create.product.dto';
 import { UpdateProductDto } from './dto/update.product.dto';
 import { WhereConditionDto } from './dto/whereCondition.dto';
 import { ProductDto } from './dto/product.dto';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly productRepository: ProductRepository) {}
+  private readonly s3: S3Client;
+  constructor(private readonly productRepository: ProductRepository) {
+    this.s3 = new S3Client({
+      region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+    });
+  }
 
   async getProductList(
     userId: string | null,
@@ -37,17 +48,24 @@ export class ProductService {
 
     const hasNextPage = totalCount > pageNumber * pageSize;
 
+    const processedProductList = await this.processProduct(userId, productList);
+
     return {
       hasNextPage,
-      currentPage: pageNumber,
+      totalCount,
       totalPage: Math.ceil(totalCount / pageSize),
-      list: this.setIsFavorite(userId, productList),
+      list: processedProductList,
     };
   }
 
-  async getProductById(id: string) {
+  async getProductById(userId: string | null, id: string) {
     const product = await this.productRepository.getProductById(id);
-    return this.setIsFavorite(null, product)[0];
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const processedProduct = await this.processProduct(userId, product);
+    return processedProduct[0];
   }
 
   async createProduct(data: CreateProductDto) {
@@ -70,17 +88,37 @@ export class ProductService {
     return this.productRepository.deleteProduct(id);
   }
 
-  private async setIsFavorite(
+  private async processProduct(
     userId: string | null,
     product: ProductDto[] | ProductDto,
   ) {
     const productList = Array.isArray(product) ? product : [product];
 
-    return productList.map((product) => {
+    return productList.map(async (product) => {
       const { isFavorite } = product;
+      const signedUrls = await Promise.all(
+        product.images.map(async (imageUrl) => {
+          const imageKey = imageUrl.replace(
+            'https://panda-market-0001.s3.ap-northeast-2.amazonaws.com/',
+            '',
+          );
+
+          const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+          });
+
+          const url = await getSignedUrl(this.s3, command, {
+            expiresIn: 1000 * 60 * 5, // URL의 유효 기간 5분
+          });
+
+          return url;
+        }),
+      );
       return {
         ...product,
         isFavorite: isFavorite.some((favorite) => favorite.id === userId),
+        images: signedUrls,
       };
     });
   }
@@ -91,8 +129,8 @@ export class ProductService {
         return { createdAt: 'desc' };
       case 'oldest':
         return { createdAt: 'asc' };
-      case 'price':
-        return { price: 'desc' };
+      case 'title':
+        return { title: 'asc' };
       case 'price_asc':
         return { price: 'asc' };
       case 'favorite':

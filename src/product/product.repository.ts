@@ -31,6 +31,7 @@ export class ProductRepository {
         price: true,
         description: true,
         createdAt: true,
+        images: true,
         owner: {
           select: {
             nickname: true,
@@ -54,6 +55,7 @@ export class ProductRepository {
         price: true,
         description: true,
         createdAt: true,
+        images: true,
         owner: {
           select: {
             nickname: true,

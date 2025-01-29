@@ -4,6 +4,7 @@ export class ProductDto {
   price: number;
   description: string;
   createdAt: Date;
+  images: string[];
   owner: {
     nickname: string;
   };
