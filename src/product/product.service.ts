@@ -4,21 +4,18 @@ import { CreateProductDto } from './dto/create.product.dto';
 import { UpdateProductDto } from './dto/update.product.dto';
 import { WhereConditionDto } from './dto/whereCondition.dto';
 import { ProductDto } from './dto/product.dto';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3_CLIENT } from 'src/common/providers/s3.client.provider';
+import { S3Client } from '@aws-sdk/client-s3';
+import { Inject } from '@nestjs/common';
 
 @Injectable()
 export class ProductService {
-  private readonly s3: S3Client;
-  constructor(private readonly productRepository: ProductRepository) {
-    this.s3 = new S3Client({
-      region: process.env.AWS_REGION,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-    });
-  }
+  constructor(
+    private readonly productRepository: ProductRepository,
+    @Inject(S3_CLIENT) private readonly s3: S3Client,
+  ) {}
 
   async getProductList(
     userId: string | null,
@@ -68,8 +65,8 @@ export class ProductService {
     return processedProduct[0];
   }
 
-  async createProduct(data: CreateProductDto) {
-    return this.productRepository.createProduct(data);
+  async createProduct(userId: string, data: CreateProductDto) {
+    return this.productRepository.createProduct(userId, data);
   }
 
   async updateProduct(id: string, data: UpdateProductDto) {

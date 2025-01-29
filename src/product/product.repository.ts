@@ -70,9 +70,12 @@ export class ProductRepository {
     });
   }
 
-  createProduct(data: CreateProductDto) {
+  createProduct(userId: string, data: CreateProductDto) {
     return this.prismaService.product.create({
-      data,
+      data: {
+        ...data,
+        ownerId: userId,
+      },
       select: {
         id: true,
         name: true,
