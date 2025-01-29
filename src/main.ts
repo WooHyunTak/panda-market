@@ -7,11 +7,7 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const allowedOrigins: string[] = [
-    'http://localhost:3001',
-    'https://moving-fe-e1p7.vercel.app',
-    'https://moving-fe-weld.vercel.app',
-  ];
+  const allowedOrigins: string[] = ['http://localhost:3001'];
   // CORS 설정
   const corsOptions: CorsOptions = {
     credentials: true,
