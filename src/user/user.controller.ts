@@ -20,8 +20,9 @@ import {
 import { User } from 'src/common/decorators/user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadDto } from 'src/common/strategyies/dto/payload.dto';
+import { JwtRefreshGuard } from 'src/common/guards/jwt.refresh.guard';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -60,8 +61,8 @@ export class UserController {
     return userInfo;
   }
 
-  @Get('refresh')
-  @UseGuards(AuthGuard('refresh'))
+  @Get('refresh-token')
+  @UseGuards(JwtRefreshGuard)
   async refresh(@User() user: PayloadDto, @Res() res: Response) {
     const accessToken = createToken(user, 'access');
     const refreshToken = createToken(user, 'refresh');

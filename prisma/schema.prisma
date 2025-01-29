@@ -26,6 +26,8 @@ model User {
   favoriteProduct  Product[] @relation("UserFavorites")
   article          Article[]
   favoriteArticles Article[] @relation("Favorites")
+
+  @@map("user")
 }
 
 model Article {
@@ -39,6 +41,8 @@ model Article {
   isFavorite    User[]    @relation("Favorites")
   owner         User?     @relation(fields: [ownerId], references: [id])
   ownerId       String?
+
+  @@map("article")
 }
 
 model Product {
@@ -55,6 +59,8 @@ model Product {
   isFavorite    User[]    @relation("UserFavorites")
   owner         User?     @relation(fields: [ownerId], references: [id])
   ownerId       String?
+
+  @@map("product")
 }
 
 model Comment {
@@ -69,4 +75,6 @@ model Comment {
   userId    String?
   Product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
   productId String?
+
+  @@map("comment")
 }

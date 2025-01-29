@@ -21,18 +21,23 @@ import { CreateProductDto } from './dto/create.product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidationProductPipe } from './pipes/validation.product.pipe';
 import { UpdateProductDto } from './dto/update.product.dto';
+import { JwtOptionalGuard } from 'src/common/guards/jwt.optional.guard';
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtOptionalGuard)
   async getProductList(
     @Query() query: QueryStringDto,
     @User() user: TokenPayloadDto,
   ) {
-    const userId = user.id;
+    let userId = null;
+    if (user) {
+      userId = user.id;
+    }
+
     const {
       keyword = '',
       orderBy = 'recent',

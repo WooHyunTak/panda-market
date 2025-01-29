@@ -15,7 +15,7 @@ import { UpdateCommentDto } from './dto/update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateCommentValidationPipe } from './pipes/create.validation.pipe';
 
-@Controller('comment')
+@Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 

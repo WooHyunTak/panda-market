@@ -18,7 +18,7 @@ export class ProductRepository {
     pageNumber: number,
     pageSize: number,
     where: WhereConditionDto,
-    orderBy: { [key: string]: string | { _count: string } },
+    orderBy: { [key: string]: string },
   ) {
     return this.prismaService.product.findMany({
       skip: (pageNumber - 1) * pageSize,

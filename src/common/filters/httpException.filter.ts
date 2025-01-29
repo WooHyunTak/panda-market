@@ -14,15 +14,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+    }
 
     console.log({
       path: request.path,
       method: request.method,
-      error: exception,
+      error: {
+        name: exception.name,
+        message: exception.message,
+        statusCode: status,
+      },
       date: new Date(),
     });
 
@@ -31,7 +35,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       method: request.method,
       status,
       message: exception.message || 'Internal Server Error',
-      // data: status >= 500 ? undefined : exception['response']?.data,
       date: new Date(),
     });
   }

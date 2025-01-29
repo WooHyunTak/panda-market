@@ -126,15 +126,13 @@ export class ProductService {
         return { createdAt: 'desc' };
       case 'oldest':
         return { createdAt: 'asc' };
-      case 'title':
-        return { title: 'asc' };
+      case 'name':
+        return { name: 'asc' };
       case 'price_asc':
         return { price: 'asc' };
       case 'favorite':
         return {
-          isFavorite: {
-            _count: 'desc',
-          },
+          favoriteCount: 'desc',
         };
       default:
         return { createdAt: 'desc' };

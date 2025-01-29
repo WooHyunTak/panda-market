@@ -6,7 +6,10 @@ import { env } from 'src/common/configs/env';
 import { PayloadDto } from './dto/payload.dto';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtOptionalStrategy extends PassportStrategy(
+  Strategy,
+  'optional',
+) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -23,7 +26,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: PayloadDto) {
-    return payload;
+  async validate(payload: PayloadDto | null) {
+    console.log('payload', payload);
+    return payload ? payload : null;
   }
 }

@@ -17,7 +17,7 @@ import { TokenPayloadDto } from 'src/common/dto/tokenPayload.dto';
 import { CreateArticleDto } from './dto/create.dto';
 import { UpdateArticleDto } from './dto/update.dto';
 
-@Controller('article')
+@Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 

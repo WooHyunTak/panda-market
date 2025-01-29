@@ -3,9 +3,17 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/httpException.filter';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
 
   const allowedOrigins: string[] = ['http://localhost:3001'];
   // CORS 설정

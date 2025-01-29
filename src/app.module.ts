@@ -9,6 +9,7 @@ import { env } from './common/configs/env';
 import { CommentModule } from './comment/comment.module';
 import { ArticleModule } from './article/article.module';
 import { ProductModule } from './product/product.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     UserModule,
@@ -22,6 +23,7 @@ import { ProductModule } from './product/product.module';
     CommentModule,
     ArticleModule,
     ProductModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

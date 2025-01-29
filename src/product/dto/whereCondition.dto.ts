@@ -1,3 +1,6 @@
 export class WhereConditionDto {
-  OR?: object[];
+  OR?: {
+    name?: { contains: string };
+    description?: { contains: string };
+  }[];
 }
